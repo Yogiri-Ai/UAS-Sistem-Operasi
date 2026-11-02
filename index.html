@@ -968,24 +968,382 @@
       color: var(--body);
     }
 
-    /* Tablet & Mobile responsive */
-    @media (max-width: 1024px) {
-      .footer__content {
-        grid-template-columns: 1fr;
-        gap: 32px;
-        padding: 50px 24px 0;
-      }
+    .alloc-controls-grid {
+      grid-template-columns: 1fr 140px 140px;
+    }
+
+    /* ==========================================================================
+       RESPONSIVE DESIGN (TABLET & MOBILE)
+       ========================================================================== */
+    
+    /* 1. TABLET (769px – 1024px) */
+    @media (min-width: 769px) and (max-width: 1024px) {
       .hero-footer {
+        --u: min(100vw / 1024, 100vh / 672);
+        --u: min(100vw / 1024, 100svh / 672);
         height: auto;
         min-height: 100vh;
-        overflow-y: auto;
+        min-height: 100svh;
+        padding-bottom: 90px;
       }
+
+      .footer__content {
+        grid-template-columns: 1fr 1fr;
+        column-gap: 32px;
+        row-gap: 36px;
+        width: 100%;
+        max-width: 100%;
+        padding: 50px 32px 0;
+      }
+
+      .brand {
+        grid-column: 1 / -1;
+      }
+
+      .brand__title {
+        font-size: 22px;
+      }
+
+      .brand__text {
+        font-size: 14px;
+        max-width: 100%;
+      }
+
       .footer__wordmark {
-        font-size: 26vw;
-        bottom: 4vw;
+        font-size: 22vw;
+        bottom: 2vw;
       }
+    }
+
+    /* 2. MOBILE SMARTPHONES (≤ 768px) */
+    @media (max-width: 768px) {
+      /* Reset unit canvas scale on mobile so text is sharp, crisp, and readable */
+      .hero-footer {
+        --u: 1px;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100svh;
+        padding-bottom: 110px;
+        overflow: hidden;
+      }
+
+      .footer__stage::after {
+        background: linear-gradient(
+          to bottom,
+          var(--paper) 0%,
+          rgb(241 241 238 / .97) 38%,
+          rgb(241 241 238 / .85) 65%,
+          rgb(241 241 238 / 0) 92%
+        );
+      }
+
+      .footer__content {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 100%;
+        padding: 28px 16px 0;
+        gap: 24px;
+      }
+
+      .brand {
+        width: 100%;
+        padding-right: 0;
+      }
+
+      .brand__logo {
+        font-size: 16px;
+        gap: 9px;
+      }
+
+      .brand__mark {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+      }
+
+      .brand__title {
+        margin-top: 14px;
+        font-size: 20px;
+        line-height: 1.32;
+        letter-spacing: -0.03em;
+        font-weight: 700;
+      }
+
+      .brand__text {
+        margin-top: 10px;
+        font-size: 13.5px;
+        line-height: 1.55;
+        max-width: 100%;
+      }
+
+      /* Buttons CTA & GitHub on Mobile */
+      .brand__cta, .brand__github {
+        height: 40px;
+        padding: 0 16px;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 8px;
+        justify-content: center;
+      }
+
+      .brand__cta svg, .brand__github svg {
+        width: 15px;
+        height: 15px;
+      }
+
+      .brand__copy {
+        margin-top: 14px;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+
+      .brand__by {
+        margin-top: 8px;
+        font-size: 12px;
+      }
+
+      .brand__status {
+        margin-top: 12px;
+        gap: 6px;
+      }
+
+      .chip {
+        height: 26px;
+        padding: 0 10px;
+        font-size: 11px;
+      }
+
+      /* Columns in Hero */
+      .col {
+        width: 100%;
+      }
+
+      .col__title {
+        font-size: 15.5px;
+        font-weight: 700;
+        margin-bottom: 2px;
+      }
+
+      .col__list {
+        gap: 11px;
+        margin-top: 11px;
+        font-size: 13.5px;
+      }
+
+      .member-item {
+        gap: 8px;
+      }
+
+      .member-name {
+        font-size: 13px;
+      }
+
+      .member-nim {
+        font-size: 11px;
+        padding: 2px 6px;
+      }
+
+      /* Giant Wordmark on Mobile */
+      .footer__wordmark {
+        font-size: 21vw;
+        bottom: 12px;
+        letter-spacing: -0.035em;
+        opacity: 0.85;
+      }
+
       .scroll-indicator {
         bottom: 12px;
+        font-size: 11.5px;
+        padding: 6px 14px;
+      }
+
+      /* ======================================================================
+         SIMULATOR SECTION RESPONSIVE (MOBILE)
+         ====================================================================== */
+      .simulator-section {
+        padding-top: 24px;
+        padding-bottom: 60px;
+      }
+
+      .sim-container {
+        padding: 0 14px;
+      }
+
+      /* Header & Tabs */
+      .sim-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+        margin-bottom: 18px;
+        padding-bottom: 14px;
+      }
+
+      .sim-header__title-group h2 {
+        font-size: 20px;
+        line-height: 1.25;
+      }
+
+      .sim-header__title-group p {
+        font-size: 12.5px;
+        margin-top: 3px;
+      }
+
+      .sim-header > div:last-child {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        width: 100%;
+      }
+
+      .sim-nav-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        gap: 4px;
+        padding: 4px;
+        width: 100%;
+        scrollbar-width: none;
+      }
+
+      .sim-nav-tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .sim-tab-btn {
+        padding: 7px 12px;
+        font-size: 12px;
+        flex-shrink: 0;
+      }
+
+      .sim-header-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        width: 100%;
+      }
+
+      /* Cards & Controls */
+      .sim-card {
+        padding: 16px 14px;
+        border-radius: 12px;
+        margin-bottom: 16px;
+      }
+
+      .sim-card__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 14px;
+        padding-bottom: 10px;
+      }
+
+      .sim-card__title {
+        font-size: 14.5px;
+      }
+
+      .controls-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .alloc-controls-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      .form-group {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+
+      .form-control {
+        height: 40px;
+        font-size: 14px;
+      }
+
+      .presets-row {
+        gap: 6px;
+        margin-top: 10px;
+      }
+
+      .preset-chip {
+        padding: 5px 10px;
+        font-size: 11.5px;
+      }
+
+      /* Canvas */
+      .canvas-container {
+        height: 280px;
+        border-radius: 8px;
+      }
+
+      /* Playback Toolbar */
+      .playback-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 10px 12px;
+      }
+
+      .playback-controls {
+        justify-content: center;
+      }
+
+      .scrubber-group {
+        min-width: 0;
+        width: 100%;
+      }
+
+      /* Stat Tiles: 2x2 Grid on Mobile */
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .stat-tile {
+        padding: 10px 12px;
+      }
+
+      .stat-tile__label {
+        font-size: 10px;
+      }
+
+      .stat-tile__value {
+        font-size: 21px;
+      }
+
+      .stat-tile__desc {
+        font-size: 11px;
+      }
+
+      /* Allocation Grid 8x8 */
+      .alloc-grid-container {
+        grid-template-columns: repeat(8, 1fr) !important;
+        gap: 4px;
+        padding: 8px;
+      }
+
+      .alloc-block {
+        font-size: 9.5px;
+      }
+
+      /* Chart Box */
+      .chart-box {
+        height: 260px;
+      }
+
+      /* Team Cards */
+      .team-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .team-card {
+        padding: 12px 14px;
       }
     }
   </style>
@@ -1166,15 +1524,17 @@
             </button>
           </nav>
 
-          <a href="https://github.com/Yogiri-Ai/UAS-Sistem-Operasi" target="_blank" rel="noopener noreferrer" class="btn-top" style="display:inline-flex; align-items:center; gap:5px;" title="Lihat Repositori GitHub">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
-            </svg>
-            GitHub
-          </a>
-          <button class="btn-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Kembali ke Atas">
-            ↑ Atas
-          </button>
+          <div class="sim-header-actions">
+            <a href="https://github.com/Yogiri-Ai/UAS-Sistem-Operasi" target="_blank" rel="noopener noreferrer" class="btn-top" style="display:inline-flex; align-items:center; gap:5px;" title="Lihat Repositori GitHub">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+              </svg>
+              GitHub
+            </a>
+            <button class="btn-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Kembali ke Atas">
+              ↑ Atas
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1329,8 +1689,8 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
               Pemetaan Blok Penyimpanan Berkas
             </h3>
-            <div style="display:flex; gap:8px;">
-              <select class="form-control" id="allocMethodSelect" style="height:32px; font-size:12px;" onchange="changeAllocMethod(this.value)">
+            <div style="display:flex; flex-wrap:wrap; gap:8px;">
+              <select class="form-control" id="allocMethodSelect" style="height:32px; font-size:12px; width:auto; min-width:180px;" onchange="changeAllocMethod(this.value)">
                 <option value="contiguous">Contiguous Allocation</option>
                 <option value="linked">Linked List Allocation</option>
                 <option value="indexed">Indexed Allocation</option>
@@ -1345,7 +1705,7 @@
           </div>
 
           <!-- Simple Add File Form -->
-          <div class="controls-grid" style="grid-template-columns: 1fr 140px 140px;">
+          <div class="controls-grid alloc-controls-grid">
             <div class="form-group">
               <label class="form-label" for="newFileName">Nama Berkas</label>
               <input type="text" class="form-control" id="newFileName" value="laporan.pdf" placeholder="contoh: file.txt" />
