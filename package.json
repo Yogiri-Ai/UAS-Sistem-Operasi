@@ -1,0 +1,25 @@
+{
+  "name": "disklab-simulator",
+  "version": "1.0.0",
+  "description": "DiskLab: Simulator Web Interaktif Penjadwalan Disk dan Alokasi Berkas - Final Project Sistem Operasi Ganjil 2026/2027",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "serve": "node server.js"
+  },
+  "keywords": [
+    "operating-system",
+    "disk-scheduling",
+    "file-allocation",
+    "fcfs",
+    "sstf",
+    "scan",
+    "c-scan",
+    "look",
+    "c-look",
+    "simulation"
+  ],
+  "author": "Fakhri Dinal Maulana Putra (257006111205) & Tim Kelompok",
+  "license": "MIT"
+}

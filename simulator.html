@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DiskLab — Simulator Penjadwalan Disk & Alokasi Berkas</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans antialiased">
+
+    <!-- HEADER / IDENTITAS TUGAS BESAR -->
+    <header class="bg-slate-950 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-sky-600 flex items-center justify-center font-bold text-white text-xl shadow">
+                    💾
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-lg text-white">DiskLab</span>
+                        <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-sky-400 border border-slate-700 font-mono">Tugas Akhir SO</span>
+                    </div>
+                    <p class="text-xs text-slate-400">Simulator Interaktif Penjadwalan Disk & Alokasi Berkas</p>
+                </div>
+            </div>
+
+            <!-- TAB NAVIGASI -->
+            <nav class="flex items-center gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800 overflow-x-auto">
+                <a href="index.html" class="px-2.5 py-1.5 rounded-md text-xs font-medium text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-700 border border-slate-700/80 transition flex items-center gap-1.5 whitespace-nowrap shadow-sm mr-1" title="Kembali ke Beranda DiskLab">
+                    <span>←</span><span>Beranda</span>
+                </a>
+                <button data-tab-target="scheduling" class="tab-btn px-3 py-1.5 rounded-md text-xs font-semibold bg-sky-600 text-white transition flex items-center gap-1.5 whitespace-nowrap">
+                    <span>💿 Penjadwalan Disk</span>
+                </button>
+                <button data-tab-target="allocation" class="tab-btn px-3 py-1.5 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5 whitespace-nowrap">
+                    <span>📁 Alokasi Berkas</span>
+                </button>
+                <button data-tab-target="comparison" class="tab-btn px-3 py-1.5 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5 whitespace-nowrap">
+                    <span>📊 Perbandingan Algoritma</span>
+                </button>
+                <button data-tab-target="theory" class="tab-btn px-3 py-1.5 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5 whitespace-nowrap">
+                    <span>📖 Teori & Panduan Demo</span>
+                </button>
+            </nav>
+
+            <div class="hidden xl:block text-right text-xs">
+                <div class="font-medium text-slate-300">Dosen: Muhammad Sidik Asyaky, S.T., M.T.</div>
+                <div class="text-slate-500 text-[11px]">Semester Ganjil 2026/2027</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- NOTIFIKASI TOAST -->
+    <div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
+
+        <!-- ========================================================== -->
+        <!-- TAB 1: PENJADWALAN DISK                                    -->
+        <!-- ========================================================== -->
+        <section id="panel-scheduling" class="tab-panel space-y-5">
+            <!-- Header Tab -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+                <div>
+                    <h1 class="text-lg font-bold text-white flex items-center gap-2">
+                        <span>Simulasi Penjadwalan Disk (Disk Scheduling)</span>
+                        <span id="activeAlgoBadge" class="text-xs px-2.5 py-0.5 rounded font-mono font-medium bg-sky-950 text-sky-400 border border-sky-800">SSTF</span>
+                    </h1>
+                    <p id="activeAlgoSummary" class="text-xs text-slate-400 mt-1">Simulasikan pergerakan lengan head membaca antrian silinder disk.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="presetSilberschatzBtn" class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-sky-400 text-xs font-medium border border-slate-700 transition">
+                        Contoh Buku Silberschatz
+                    </button>
+                    <button id="randomQueueBtn" class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition">
+                        Acak Antrian
+                    </button>
+                    <button id="exportCsvBtn" class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition" title="Unduh tabel hasil untuk lampiran laporan">
+                        Unduh CSV
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- FORM PARAMETER (Kiri: 4 Kolom) -->
+                <div class="lg:col-span-4 space-y-4">
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 sm:p-5 space-y-3.5 shadow-sm">
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Parameter Input</span>
+                            <span id="queueCountBadge" class="text-[11px] font-mono text-slate-500">8 request</span>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Algoritma Penjadwalan</label>
+                            <select id="algoSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-sky-500">
+                                <option value="FCFS">FCFS (First-Come, First-Served)</option>
+                                <option value="SSTF" selected>SSTF (Shortest Seek Time First)</option>
+                                <option value="SCAN">SCAN (Elevator Algorithm)</option>
+                                <option value="C-SCAN">C-SCAN (Circular SCAN)</option>
+                                <option value="LOOK">LOOK Algorithm</option>
+                                <option value="C-LOOK">C-LOOK (Circular LOOK)</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-300 mb-1">Posisi Head Awal</label>
+                                <input type="number" id="headInput" value="53" min="0" max="999" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm font-mono text-white focus:outline-none focus:border-sky-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-300 mb-1">Maks. Silinder</label>
+                                <input type="number" id="maxTrackInput" value="199" min="20" max="999" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm font-mono text-white focus:outline-none focus:border-sky-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Arah Awal Head (Untuk SCAN/LOOK)</label>
+                            <select id="directionSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-500">
+                                <option value="high" selected>Menuju Angka Tinggi (Kanan →)</option>
+                                <option value="low">Menuju Angka Rendah (Kiri ←)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="text-xs font-medium text-slate-300">Antrian Permintaan Track</label>
+                                <button id="clearQueueBtn" class="text-[11px] text-sky-400 hover:underline">Reset</button>
+                            </div>
+                            <textarea id="queueInput" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-sky-500">98, 183, 37, 122, 14, 124, 65, 67</textarea>
+                            <p class="text-[11px] text-slate-500 mt-1">Pisahkan nomor silinder dengan tanda koma.</p>
+                        </div>
+                    </div>
+
+                    <!-- KONTROL PEMUTARAN SIMULASI -->
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Kontrol Pemutaran</span>
+                            <div class="flex items-center gap-1.5 text-xs text-slate-400">
+                                <span>Kecepatan:</span>
+                                <select id="speedSelect" class="bg-slate-900 border border-slate-700 rounded px-1.5 py-0.5 text-xs text-white">
+                                    <option value="0.6">0.5x</option>
+                                    <option value="1" selected>1.0x</option>
+                                    <option value="2">2.0x</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Scrubber Waktu -->
+                        <div class="space-y-1">
+                            <input type="range" id="timelineScrubber" min="0" max="8" step="0.01" value="0" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-sky-500">
+                            <div class="flex items-center justify-between text-[11px] font-mono text-slate-500">
+                                <span>Langkah 0</span>
+                                <span id="scrubberPercent">0%</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-4 gap-2">
+                            <button id="resetBtn" class="px-2 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg transition" title="Mulai Ulang">
+                                ↺ Reset
+                            </button>
+                            <button id="stepBackBtn" class="px-2 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg transition" title="Langkah Sebelumnya">
+                                ‹ Prev
+                            </button>
+                            <button id="playBtn" class="px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs rounded-lg transition flex items-center justify-center gap-1">
+                                ▶ Putar
+                            </button>
+                            <button id="stepForwardBtn" class="px-2 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg transition" title="Langkah Selanjutnya">
+                                Next ›
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GRAFIK & HASIL SIMULASI (Kanan: 8 Kolom) -->
+                <div class="lg:col-span-8 space-y-4">
+                    <!-- Kartu Ringkasan Metrik -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 border-l-4 border-l-sky-500">
+                            <div class="text-[11px] uppercase font-semibold text-slate-400">Posisi Head</div>
+                            <div id="statCurrentHead" class="text-xl font-bold font-mono text-white mt-0.5">53</div>
+                            <div id="statStepCounter" class="text-[11px] text-slate-500 font-mono">Langkah 0 / 8</div>
+                        </div>
+                        <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 border-l-4 border-l-amber-500">
+                            <div class="text-[11px] uppercase font-semibold text-slate-400">Jarak Langkah Ini</div>
+                            <div id="statCurrentDistance" class="text-xl font-bold font-mono text-amber-400 mt-0.5">0 silinder</div>
+                            <div id="statEstStepMs" class="text-[11px] text-slate-500 font-mono">Perpindahan seek</div>
+                        </div>
+                        <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 border-l-4 border-l-emerald-500">
+                            <div class="text-[11px] uppercase font-semibold text-slate-400">Total Seek Distance</div>
+                            <div id="statTotalSeek" class="text-xl font-bold font-mono text-emerald-400 mt-0.5">236 silinder</div>
+                            <div id="statCumulativeSub" class="text-[11px] text-slate-500 font-mono">Akumulasi jarak</div>
+                        </div>
+                        <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 border-l-4 border-l-purple-500">
+                            <div class="text-[11px] uppercase font-semibold text-slate-400">Rata-Rata Seek</div>
+                            <div id="statAvgSeek" class="text-xl font-bold font-mono text-purple-400 mt-0.5">29.5 silinder</div>
+                            <div id="statMaxJumpSub" class="text-[11px] text-slate-500 font-mono">Per request</div>
+                        </div>
+                    </div>
+
+                    <!-- KANVAS GRAFIK TRAJEKTORI SILINDER -->
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 sm:p-5 space-y-3 shadow-sm">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-200">Grafik Pergerakan Head (Format Standar Silberschatz)</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-xs text-slate-400">
+                                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span> Head Awal</span>
+                                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Selesai Dilayani</span>
+                                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full border-2 border-amber-400 inline-block"></span> Batas Ujung</span>
+                            </div>
+                        </div>
+
+                        <!-- Canvas Elemen -->
+                        <div class="relative rounded-lg overflow-hidden border border-slate-800 bg-slate-950">
+                            <canvas id="diskCanvas" class="w-full h-[370px] block cursor-pointer"></canvas>
+                            <div id="canvasTooltip" class="opacity-0 absolute z-30 px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-100 shadow-xl max-w-[260px] pointer-events-none transition-opacity"></div>
+                        </div>
+
+                        <!-- Catatan Langkah Saat Ini -->
+                        <div class="p-3 rounded-lg bg-slate-900 border border-slate-800 text-xs flex items-start gap-2.5">
+                            <span class="font-bold text-sky-400 shrink-0">Catatan Langkah:</span>
+                            <span id="decisionExplainText" class="text-slate-300 leading-relaxed">Klik "Putar" atau "Next" untuk menjalankan simulasi langkah demi langkah.</span>
+                        </div>
+                    </div>
+
+                    <!-- TABEL LANGKAH KERJA -->
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 sm:p-5 space-y-3 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Tabel Rincian Langkah Kerja (Step-by-Step Trace)</span>
+                            <span id="fullSequenceText" class="text-xs font-mono text-sky-400 truncate max-w-sm"></span>
+                        </div>
+                        <div class="max-h-52 overflow-y-auto rounded-lg border border-slate-800">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead class="bg-slate-900 text-[11px] uppercase font-bold text-slate-400 sticky top-0">
+                                    <tr>
+                                        <th class="py-2 px-3">Langkah</th>
+                                        <th class="py-2 px-3">Perpindahan Silinder</th>
+                                        <th class="py-2 px-3">Tipe</th>
+                                        <th class="py-2 px-3 text-right">Jarak (Δ)</th>
+                                        <th class="py-2 px-3 text-right">Akumulasi Total</th>
+                                        <th class="py-2 px-3 hidden md:table-cell">Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stepTraceBody" class="divide-y divide-slate-800/60 font-mono"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ========================================================== -->
+        <!-- TAB 2: ALOKASI BERKAS                                      -->
+        <!-- ========================================================== -->
+        <section id="panel-allocation" class="tab-panel hidden space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+                <div>
+                    <h1 class="text-lg font-bold text-white flex items-center gap-2">
+                        <span>Simulasi Alokasi Berkas (File System Allocation)</span>
+                        <span id="activeMethodBadge" class="text-xs px-2.5 py-0.5 rounded font-mono font-medium bg-emerald-950 text-emerald-400 border border-emerald-800">CONTIGUOUS</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 mt-1">Memvisualisasikan pemetaan berkas ke blok disk fisik secara Contiguous, Linked, dan Indexed.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="scenarioFragBtn" class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-medium border border-slate-700 transition">
+                        ⚡ Uji Fragmentasi Eksternal
+                    </button>
+                    <button id="scenarioLinkedBtn" class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-sky-300 text-xs font-medium border border-slate-700 transition">
+                        🔗 Contoh Linked
+                    </button>
+                    <button id="scenarioIndexedBtn" class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-purple-300 text-xs font-medium border border-slate-700 transition">
+                        📑 Contoh Indexed
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pesan Notifikasi -->
+            <div id="allocAlertMessage" class="hidden p-3 rounded-lg border text-xs font-medium leading-relaxed"></div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- FORM OPERASI BERKAS (Kiri: 4 Kolom) -->
+                <div class="lg:col-span-4 space-y-4">
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 sm:p-5 space-y-3.5 shadow-sm">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-300 block pb-2 border-b border-slate-800">Metode & Operasi Berkas</span>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Metode Alokasi</label>
+                            <select id="allocMethodSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-sky-500 font-medium">
+                                <option value="contiguous" selected>1. Contiguous Allocation (Berurutan)</option>
+                                <option value="linked">2. Linked Allocation (Rantai Pointer)</option>
+                                <option value="indexed">3. Indexed Allocation (Blok Indeks)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Total Blok Disk</label>
+                            <select id="totalBlocksSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-500">
+                                <option value="64" selected>64 Blok (Grid 8 × 8)</option>
+                                <option value="100">100 Blok (Grid 10 × 10)</option>
+                            </select>
+                        </div>
+
+                        <!-- Form Tambah File -->
+                        <div class="pt-3 border-t border-slate-800 space-y-2.5">
+                            <span class="text-xs font-semibold text-slate-200 block">Simpan Berkas Baru</span>
+                            <div class="grid grid-cols-12 gap-2">
+                                <div class="col-span-6">
+                                    <label class="block text-[11px] text-slate-400 mb-1">Nama Berkas</label>
+                                    <input type="text" id="fileNameInput" placeholder="Dokumen.docx" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-sky-500">
+                                </div>
+                                <div class="col-span-4">
+                                    <label class="block text-[11px] text-slate-400 mb-1">Ukuran (Blok)</label>
+                                    <input type="number" id="fileSizeInput" value="5" min="1" max="50" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-sky-500">
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="block text-[11px] text-slate-400 mb-1">Warna</label>
+                                    <input type="color" id="fileColorInput" value="#38bdf8" class="w-full h-[30px] rounded cursor-pointer bg-transparent border border-slate-700">
+                                </div>
+                            </div>
+                            <button id="addFileBtn" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-lg transition">
+                                + Alokasikan Berkas
+                            </button>
+                        </div>
+
+                        <div class="pt-2 flex items-center gap-2">
+                            <button id="defragBtn" class="flex-1 py-1.5 px-2 bg-amber-900/30 hover:bg-amber-900/50 text-amber-300 border border-amber-800/60 rounded-lg text-xs font-medium transition">
+                                🧹 Defragmentasi Disk
+                            </button>
+                            <button id="clearDiskBtn" class="flex-1 py-1.5 px-2 bg-rose-900/30 hover:bg-rose-900/50 text-rose-300 border border-rose-800/60 rounded-lg text-xs font-medium transition">
+                                🗑 Kosongkan Disk
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- UJI AKSES BACA BLOK KE-K -->
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-2.5 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Uji Akses Baca Blok ke-k</span>
+                            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-sky-400">O(1) vs O(k)</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Uji berapa operasi I/O yang dibutuhkan untuk membaca blok tertentu pada berkas.</p>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-2">
+                                <label class="block text-[10px] text-slate-400 mb-1">Pilih Berkas</label>
+                                <select id="readSimFileSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white"></select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Offset (k)</label>
+                                <input type="number" id="readSimOffsetInput" value="3" min="0" max="99" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-xs font-mono text-white">
+                            </div>
+                        </div>
+                        <button id="runReadSimBtn" class="w-full py-1.5 bg-sky-700 hover:bg-sky-600 text-white rounded-lg text-xs font-medium transition">
+                            Jalankan Uji Baca
+                        </button>
+                        <div id="readSimResultBox" class="hidden p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-xs space-y-1"></div>
+                    </div>
+
+                    <!-- Inspektor Blok -->
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-1 text-xs">
+                        <span class="font-bold text-slate-400 uppercase text-[11px] block">Inspektor Blok Terpilih</span>
+                        <div id="blockInspectorContent" class="text-slate-400 font-mono text-[11px] p-2 bg-slate-900 rounded border border-slate-800">
+                            Arahkan atau klik blok pada peta disk di sebelah kanan.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PETA BLOK DISK & TABEL DIREKTORI (Kanan: 8 Kolom) -->
+                <div class="lg:col-span-8 space-y-4">
+                    <!-- Status Blok Disk -->
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                        <div class="bg-slate-950 border border-slate-800 rounded-xl p-3">
+                            <div class="text-[10px] font-semibold uppercase text-slate-400">Total Blok</div>
+                            <div id="statAllocTotal" class="text-lg font-bold font-mono text-white mt-0.5">64</div>
+                            <div class="text-[10px] text-slate-500">Kapasitas fisik</div>
+                        </div>
+                        <div class="bg-slate-950 border border-slate-800 rounded-xl p-3">
+                            <div class="text-[10px] font-semibold uppercase text-slate-400">Terpakai</div>
+                            <div id="statAllocUsed" class="text-lg font-bold font-mono text-emerald-400 mt-0.5">0 (0%)</div>
+                            <div class="text-[10px] text-slate-500">Blok terisi</div>
+                        </div>
+                        <div class="bg-slate-950 border border-slate-800 rounded-xl p-3">
+                            <div class="text-[10px] font-semibold uppercase text-slate-400">Tersisa Kosong</div>
+                            <div id="statAllocFree" class="text-lg font-bold font-mono text-sky-400 mt-0.5">64</div>
+                            <div class="text-[10px] text-slate-500">Blok bebas</div>
+                        </div>
+                        <div class="bg-slate-950 border border-slate-800 rounded-xl p-3">
+                            <div class="text-[10px] font-semibold uppercase text-slate-400">Jumlah Celah</div>
+                            <div id="statAllocFragments" class="text-lg font-bold font-mono text-amber-400 mt-0.5">1</div>
+                            <div id="statFragRatio" class="text-[10px] text-slate-500">Frag: 0%</div>
+                        </div>
+                        <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 col-span-2 sm:col-span-1">
+                            <div class="text-[10px] font-semibold uppercase text-slate-400">Celah Terbesar</div>
+                            <div id="statAllocLargest" class="text-lg font-bold font-mono text-purple-400 mt-0.5">64 blok</div>
+                            <div class="text-[10px] text-slate-500">Maks. kontigu</div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar Penggunaan Disk -->
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 space-y-1">
+                        <div class="flex items-center justify-between text-xs text-slate-400">
+                            <span>Penggunaan Kapasitas Disk</span>
+                            <span id="statUsageLabel" class="font-mono text-emerald-400 font-semibold">0.0% Terisi</span>
+                        </div>
+                        <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800">
+                            <div id="statDiskProgressBar" class="bg-emerald-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- GRID BLOK DISK -->
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 sm:p-5 space-y-3 shadow-sm">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-200">Peta Blok Disk Fisik</span>
+                                <button id="clearSelectionBtn" class="hidden text-[11px] px-2 py-0.5 rounded bg-slate-800 text-sky-400 hover:bg-slate-700">Hapus Sorotan</button>
+                            </div>
+                            <div class="flex items-center gap-3 text-xs text-slate-400">
+                                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-slate-800 border border-slate-700 inline-block"></span> Kosong</span>
+                                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-sky-500/40 border border-sky-400 inline-block"></span> Data</span>
+                                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-amber-500/40 border border-amber-400 inline-block"></span> Index Block</span>
+                            </div>
+                        </div>
+
+                        <div class="relative min-h-[360px] max-h-[440px] overflow-y-auto bg-slate-900/60 rounded-lg border border-slate-800 p-2">
+                            <div id="storageGridContainer" class="grid grid-cols-8 gap-2 relative z-10"></div>
+                            <svg id="svgConnections" class="absolute top-0 left-0 w-full h-full pointer-events-none z-20"></svg>
+                        </div>
+                    </div>
+
+                    <!-- TABEL DIREKTORI BERKAS -->
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 sm:p-5 space-y-3 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-200">Tabel Direktori Berkas (File Directory Table)</span>
+                            <span class="text-[11px] text-slate-400">Klik "Sorot" untuk melihat koneksi blok</span>
+                        </div>
+                        <div class="overflow-x-auto rounded-lg border border-slate-800">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead class="bg-slate-900 text-[11px] uppercase font-bold text-slate-400">
+                                    <tr>
+                                        <th class="py-2.5 px-3">Nama Berkas</th>
+                                        <th class="py-2.5 px-3">Ukuran</th>
+                                        <th class="py-2.5 px-3">Informasi Blok / Pointer</th>
+                                        <th class="py-2.5 px-3 text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fileDirectoryBody" class="divide-y divide-slate-800/60 font-mono"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ========================================================== -->
+        <!-- TAB 3: PERBANDINGAN ALGORITMA                              -->
+        <!-- ========================================================== -->
+        <section id="panel-comparison" class="tab-panel hidden space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+                <div>
+                    <h1 class="text-lg font-bold text-white">Perbandingan Kinerja Algoritma Penjadwalan Disk</h1>
+                    <p class="text-xs text-slate-400 mt-1">Bandingkan total jarak perpindahan head antar algoritma pada dataset antrian yang sama.</p>
+                </div>
+                <div id="compDatasetBadge" class="text-xs font-mono px-3 py-1.5 rounded bg-slate-950 border border-slate-800 text-sky-400"></div>
+            </div>
+
+            <!-- Kartu Juara -->
+            <div id="comparisonWinnerCard"></div>
+
+            <!-- Diagram Batang Chart.js -->
+            <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 space-y-3 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-200">Grafik Batang Total Seek Time (Semakin Rendah Semakin Baik)</span>
+                    <span class="text-xs font-mono text-slate-400">Satuan: Silinder</span>
+                </div>
+                <div class="h-72 w-full">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Tabel Perbandingan Komprehensif -->
+            <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 space-y-3 shadow-sm">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-200 block">Tabel Ringkasan Performa Algoritma</span>
+                <div class="overflow-x-auto rounded-lg border border-slate-800">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead class="bg-slate-900 text-[11px] uppercase font-bold text-slate-400">
+                            <tr>
+                                <th class="py-2.5 px-3">Peringkat & Algoritma</th>
+                                <th class="py-2.5 px-3 text-right">Total Seek Distance</th>
+                                <th class="py-2.5 px-3 text-right">Rata-Rata / Request</th>
+                                <th class="py-2.5 px-3 text-right">Lompatan Maksimum</th>
+                                <th class="py-2.5 px-3 text-right">Efisiensi vs FCFS</th>
+                                <th class="py-2.5 px-3">Urutan Kunjungan Silinder</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparisonTableBody" class="divide-y divide-slate-800/60 font-mono"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ========================================================== -->
+        <!-- TAB 4: TEORI & PANDUAN DEMO                                -->
+        <!-- ========================================================== -->
+        <section id="panel-theory" class="tab-panel hidden space-y-6">
+            <div class="pb-3 border-b border-slate-800">
+                <h1 class="text-lg font-bold text-white">Landasan Teori & Panduan Presentasi UAS</h1>
+                <p class="text-xs text-slate-400 mt-1">Rangkuman materi penting untuk persiapan presentasi 15 menit dan sesi tanya jawab dengan dosen penguji.</p>
+            </div>
+
+            <!-- 2 Kolom Ringkasan Materi -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
+                <!-- Materi Penjadwalan Disk -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 space-y-3">
+                    <span class="text-xs font-bold uppercase tracking-wider text-sky-400 block pb-1 border-b border-slate-800">1. Konsep Penjadwalan Disk</span>
+                    <p class="text-slate-300 leading-relaxed">
+                        Waktu akses media penyimpanan sekunder dirumuskan sebagai:
+                    </p>
+                    <div class="p-2.5 rounded bg-slate-900 border border-slate-800 font-mono text-sky-300 text-center">
+                        Waktu Akses = Seek Time + Rotational Latency + Transfer Time
+                    </div>
+                    <ul class="list-disc pl-5 space-y-1.5 text-slate-300">
+                        <li><strong>Seek Time:</strong> Waktu pergerakan lengan mekanis memindahkan jarum head ke nomor silinder target. Ini adalah komponen waktu terbesar yang dioptimalkan oleh algoritma penjadwalan.</li>
+                        <li><strong>FCFS:</strong> Adil melayani antrian urut, namun total gerakan head sangat boros.</li>
+                        <li><strong>SSTF:</strong> Selalu memilih jarak terdekat; sangat hemat silinder, tetapi berisiko menimbulkan <em>starvation</em> bagi request yang jauh.</li>
+                        <li><strong>SCAN (Elevator):</strong> Bergerak menyapu ke satu arah hingga batas silinder ujung (0 atau 199) lalu berbalik arah, sehingga bebas starvation.</li>
+                        <li><strong>C-SCAN:</strong> Menyapu satu arah hingga batas, lalu langsung kembali ke silinder awal tanpa melayani data saat kembali agar waktu tunggu lebih seragam.</li>
+                        <li><strong>LOOK & C-LOOK:</strong> Varian cerdas dari SCAN/C-SCAN yang hanya bergerak sejauh permintaan terjauh tanpa membuang jarak ke ujung fisik disk.</li>
+                    </ul>
+                </div>
+
+                <!-- Materi Alokasi Berkas -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 space-y-3">
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 block pb-1 border-b border-slate-800">2. Konsep Metode Alokasi Berkas</span>
+                    <ul class="list-disc pl-5 space-y-2 text-slate-300">
+                        <li>
+                            <strong class="text-sky-300">Contiguous Allocation (Alokasi Berurutan):</strong>
+                            Berkas menempati blok-blok yang berdampingan secara linear. Kecepatan akses acak (*Random Access*) sangat tinggi ($O(1)$), namun rentan mengalami <strong>External Fragmentation</strong> saat berkas dihapus.
+                        </li>
+                        <li>
+                            <strong class="text-emerald-300">Linked Allocation (Alokasi Terhubung):</strong>
+                            Tiap blok berkas menyimpan pointer ke blok berikutnya (mirip Linked List). Bebas dari fragmentasi eksternal, tetapi akses acak lambat ($O(k)$) karena harus menelusuri rantai blok dari awal.
+                        </li>
+                        <li>
+                            <strong class="text-amber-300">Indexed Allocation (Alokasi Berindeks):</strong>
+                            Semua penunjuk blok data berkas dikumpulkan ke dalam satu blok khusus bernama *Index Block*. Mendukung akses acak langsung tanpa fragmentasi eksternal, namun memiliki beban pemborosan ruang (*overhead*) 1 blok indeks per berkas.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- SKENARIO DEMO RESMI UNTUK PRESENTASI KELOMPOK -->
+            <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 space-y-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-400 block">Skenario Langkah Demo di Hadapan Dosen (15 Menit)</span>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-3 text-xs">
+                    <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
+                        <div class="font-bold text-sky-400 font-mono">Tahap 1</div>
+                        <div class="font-semibold text-white">Preset Silberschatz</div>
+                        <div class="text-[11px] text-slate-400">Klik "Contoh Buku Silberschatz" untuk memuat head 53 dan antrian 98, 183, 37, 122, 14, 124, 65, 67.</div>
+                    </div>
+                    <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
+                        <div class="font-bold text-sky-400 font-mono">Tahap 2</div>
+                        <div class="font-semibold text-white">Animasi Step-by-Step</div>
+                        <div class="text-[11px] text-slate-400">Klik tombol "Putar" atau "Next", perlihatkan jalannya garis trajektori head dan pencatatan di tabel trace.</div>
+                    </div>
+                    <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
+                        <div class="font-bold text-sky-400 font-mono">Tahap 3</div>
+                        <div class="font-semibold text-white">Tab Perbandingan</div>
+                        <div class="text-[11px] text-slate-400">Tunjukkan diagram batang: buktikan SSTF (236) dan LOOK (299) jauh lebih hemat dibanding FCFS (640).</div>
+                    </div>
+                    <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
+                        <div class="font-bold text-emerald-400 font-mono">Tahap 4</div>
+                        <div class="font-semibold text-white">Uji Fragmentasi</div>
+                        <div class="text-[11px] text-slate-400">Di tab Alokasi Berkas, klik "Uji Fragmentasi Eksternal", simpan file 12 blok, dan tunjukkan pesan penolakan sistem operasi.</div>
+                    </div>
+                    <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
+                        <div class="font-bold text-purple-400 font-mono">Tahap 5</div>
+                        <div class="font-semibold text-white">Uji Baca Blok ke-k</div>
+                        <div class="text-[11px] text-slate-400">Jalankan uji baca blok ke-k untuk memperlihatkan perbedaan operasi I/O antara Linked ($k+1$) dan Indexed (2 I/O).</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MEADOW FOOTER (DRIFTBAR SPEC ADAPTED FOR NAVIA & DISKLAB) -->
+    <footer class="meadow-footer footer mt-16">
+      <div class="footer__stage" aria-hidden="true">
+        <video class="footer__video"
+          src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/4d01c727-d9c5-47c8-a778-35a451ffd39f.mp4"
+          poster="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261014_121838_c97d0940-f430-4304-8573-4f47ee44f447.png"
+          autoplay muted loop playsinline preload="auto"></video>
+      </div>
+
+      <!-- WORDMARK FROSTED GLASS DISKLAB -->
+      <p class="footer__wordmark" aria-hidden="true">DiskLab</p>
+
+      <!-- FOG OVERLAY -->
+      <div class="footer__fog" aria-hidden="true"></div>
+
+      <!-- CONTENT GRID -->
+      <div class="footer__content">
+        <!-- BRAND BLOCK -->
+        <div class="brand">
+          <a class="brand__logo" href="#" aria-label="Navia home">
+            <span class="brand__mark"></span>Navia
+          </a>
+          <h2 class="brand__title">The calm bar for macOS</h2>
+          <p class="brand__text">Driftbar gathers music, tasks, meetings, weather, search, focus timers, quick notes, and more handy widgets into one calm floating bar just above your Mac Dock.</p>
+          <a class="brand__cta" href="#">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M17.05 12.54c-.03-2.75 2.25-4.07 2.35-4.14-1.28-1.87-3.27-2.13-3.98-2.16-1.69-.17-3.3 1-4.16 1-.86 0-2.18-.97-3.59-.95-1.85.03-3.55 1.07-4.5 2.72-1.92 3.33-.49 8.25 1.38 10.95.91 1.32 2 2.8 3.43 2.75 1.38-.06 1.9-.89 3.56-.89 1.66 0 2.13.89 3.59.86 1.48-.03 2.42-1.34 3.33-2.67 1.05-1.53 1.48-3.02 1.5-3.1-.03-.01-2.88-1.1-2.91-4.37ZM14.31 4.46c.76-.92 1.27-2.2 1.13-3.46-1.09.04-2.41.73-3.19 1.64-.7.81-1.31 2.1-1.15 3.34 1.22.09 2.46-.62 3.21-1.52Z"/>
+            </svg>
+            Get Driftbar today
+          </a>
+          <p class="brand__copy">© 2026 Driftbar Inc. - Made in Lisbon.</p>
+          <p class="brand__by">
+            Built with <span class="brand__heart" aria-label="love">💙</span> by <span class="brand__author"><span class="brand__avatar" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#e6e6e3" /><circle cx="12" cy="9.2" r="4.4" fill="#1b1b1b" /><path d="M3 25c0-6 4-9.4 9-9.4S21 19 21 25Z" fill="#1b1b1b" /></svg></span>Mira Okafor</span>
+          </p>
+          <ul class="brand__status" aria-label="Driftbar status">
+            <li class="chip"><span class="chip__dot" aria-hidden="true"></span>9,400 Macs in sync</li>
+            <li class="chip">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7" /><path d="M20 4v7h-7" /></svg>
+              v1.8 · Shipped today
+            </li>
+            <li class="chip">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-2.9-5.4 2.9 1.1-6L3.2 9.4l6.1-.8Z" /></svg>
+              Rated 4.8 avg
+            </li>
+          </ul>
+        </div>
+
+        <!-- NAVIGATION COLUMNS -->
+        <nav class="col col--menu" aria-label="Menu">
+          <h3 class="col__title">Menu</h3>
+          <ul class="col__list">
+            <li><a href="#">Tour</a></li>
+            <li><a href="#">Showcase</a></li>
+            <li><a href="#">Q&A</a></li>
+            <li><a href="#">Licence</a></li>
+            <li><a href="#">Journal</a></li>
+          </ul>
+        </nav>
+
+        <nav class="col" aria-label="Essentials">
+          <h3 class="col__title">Essentials</h3>
+          <ul class="col__list">
+            <li><a href="#">Support</a></li>
+            <li><a href="#">Up next</a></li>
+            <li><a href="#">Privacy notice</a></li>
+            <li><a href="#">Usage guidelines</a></li>
+            <li><a href="#">Manage licences</a></li>
+          </ul>
+        </nav>
+
+        <nav class="col" aria-label="From our team">
+          <h3 class="col__title">From our team</h3>
+          <ul class="col__list">
+            <li><a href="#">Clipnest.io</a></li>
+            <li><a href="#">Tallyo.io</a></li>
+            <li><a href="#">Pinwell.io</a></li>
+            <li><a href="#">Glyfo.co</a></li>
+            <li><a href="#">Shelfmark.app</a></li>
+            <li><a href="#">Wireloom.com</a></li>
+            <li><a href="#">Gridcraft.app</a></li>
+          </ul>
+        </nav>
+      </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="js/disk-scheduling.js"></script>
+    <script src="js/file-allocation.js"></script>
+    <script src="js/visualizer.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
