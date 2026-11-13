@@ -10,7 +10,7 @@
 |:--:|:---------------|:---:|:------------|
 | 1 | **Fikka Alisya Putri Taofik** | 257006111203 | Frontend & UI Layout |
 | 2 | **Fakhri Dinal Maulana Putra** | 257006111205 | Lead & Algoritma Engine |
-| 3 | **Anisa ** | 257006111199 | Visualizer & Canvas |
+| 3 | **Anisa Rahmawati** | 257006111199 | Visualizer & Canvas |
 | 4 | **Muhammad Zidan ** | 257006111201 | Alokasi Berkas |
 | 5 | **Muhammad Dava ** | 257006111193 | Chart & Benchmark |
 | 6 | **Prameswari Eleonora ** | 257006111218 | Dokumentasi & Pengujian |
