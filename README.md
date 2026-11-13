@@ -8,7 +8,7 @@
 ## 👥 Anggota Kelompok 2
 | No | Nama Mahasiswa | NIM | Peran Utama |
 |:--:|:---------------|:---:|:------------|
-| 1 | **Fikka Alisya Putri** | 257006111203 | Frontend & UI Layout |
+| 1 | **Fikka Alisya Putri Taofik** | 257006111203 | Frontend & UI Layout |
 | 2 | **Fakhri Dinal Maulana Putra** | 257006111205 | Lead & Algoritma Engine |
 | 3 | **Anisa ** | 257006111199 | Visualizer & Canvas |
 | 4 | **Muhammad Zidan ** | 257006111201 | Alokasi Berkas |
