@@ -913,13 +913,14 @@
 
     /* Team Grid */
     .team-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      display: flex;
+      flex-wrap: wrap;
       gap: 16px;
       margin-top: 16px;
     }
 
     .team-card {
+      flex: 1 1 280px;
       background: #ffffff;
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -1338,11 +1339,12 @@
 
       /* Team Cards */
       .team-grid {
-        grid-template-columns: 1fr;
+        flex-direction: column;
         gap: 10px;
       }
 
       .team-card {
+        flex: 1 1 100%;
         padding: 12px 14px;
       }
     }
@@ -1474,12 +1476,6 @@
             <a href="#simulator-section" onclick="smoothScrollToSim('theory'); return false;" class="member-item">
               <span class="member-name">Muhammad Dava Rayana</span>
               <span class="member-nim">257006111193</span>
-            </a>
-          </li>
-          <li>
-            <a href="#simulator-section" onclick="smoothScrollToSim('theory'); return false;" class="member-item">
-              <span class="member-name">Prameswari Eleonora C.</span>
-              <span class="member-nim">257006111218</span>
             </a>
           </li>
         </ul>
@@ -1845,14 +1841,14 @@
             </div>
           </div>
 
-          <!-- 6 Students Grid -->
+          <!-- 5 Students Grid -->
           <div class="team-grid">
             <div class="team-card">
               <div class="team-avatar">F</div>
               <div class="team-info">
                 <h4>Fikka Alisya Putri Taofik</h4>
                 <p>NIM: 257006111203</p>
-                <span>Frontend &amp; UI Layout</span>
+                <span>Frontend, UI/UX &amp; Dokumentasi</span>
               </div>
             </div>
 
@@ -1861,7 +1857,7 @@
               <div class="team-info">
                 <h4>Fakhri Dinal Maulana Putra</h4>
                 <p>NIM: 257006111205</p>
-                <span>Lead &amp; Algoritma Engine</span>
+                <span>Lead, Disk Scheduling &amp; Deploy</span>
               </div>
             </div>
 
@@ -1870,7 +1866,7 @@
               <div class="team-info">
                 <h4>Anisa Rahmawati</h4>
                 <p>NIM: 257006111199</p>
-                <span>Visualizer &amp; Canvas</span>
+                <span>Visualizer Canvas &amp; Animasi</span>
               </div>
             </div>
 
@@ -1879,7 +1875,7 @@
               <div class="team-info">
                 <h4>Muhammad Zidan Assuyuti</h4>
                 <p>NIM: 257006111201</p>
-                <span>Alokasi Berkas</span>
+                <span>Alokasi Berkas &amp; Defrag</span>
               </div>
             </div>
 
@@ -1888,16 +1884,7 @@
               <div class="team-info">
                 <h4>Muhammad Dava Rayana</h4>
                 <p>NIM: 257006111193</p>
-                <span>Chart &amp; Benchmark</span>
-              </div>
-            </div>
-
-            <div class="team-card">
-              <div class="team-avatar">P</div>
-              <div class="team-info">
-                <h4>Prameswari Eleonora Cakradara</h4>
-                <p>NIM: 257006111218</p>
-                <span>Dokumentasi &amp; Pengujian</span>
+                <span>Chart Benchmark &amp; Pengujian</span>
               </div>
             </div>
           </div>
