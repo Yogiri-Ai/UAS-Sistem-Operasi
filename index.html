@@ -39,6 +39,7 @@
     html {
       -webkit-text-size-adjust: 100%;
       scroll-behavior: smooth;
+      overflow-x: clip;
     }
 
     body {
@@ -48,7 +49,7 @@
       font-family: var(--font);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      overflow-x: hidden;
+      overflow-x: clip;
     }
 
     a {
@@ -556,7 +557,6 @@
 
     .sim-panel.active {
       display: block;
-      animation: fadeIn 0.25s ease-in-out;
     }
 
     @keyframes fadeIn {
@@ -1043,13 +1043,22 @@
         flex-direction: column;
         width: 100%;
         max-width: 100%;
+        min-width: 0;
         padding: 28px 16px 0;
         gap: 24px;
+        box-sizing: border-box;
       }
 
       .brand {
         width: 100%;
+        max-width: 100%;
+        min-width: 0;
         padding-right: 0;
+      }
+
+      .brand__title, .brand__text, .brand__copy, .brand__by {
+        max-width: 100%;
+        overflow-wrap: break-word;
       }
 
       .brand__logo {
@@ -1165,9 +1174,15 @@
       .simulator-section {
         padding-top: 24px;
         padding-bottom: 60px;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
       }
 
       .sim-container {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
         padding: 0 14px;
       }
 
@@ -1178,6 +1193,13 @@
         gap: 14px;
         margin-bottom: 18px;
         padding-bottom: 14px;
+        max-width: 100%;
+        min-width: 0;
+      }
+
+      .sim-header__title-group, .sim-card, .sim-panel {
+        max-width: 100%;
+        min-width: 0;
       }
 
       .sim-header__title-group h2 {
@@ -1921,10 +1943,12 @@
       });
 
       if (tabId === 'scheduling') {
+        redrawCanvas();
         setTimeout(redrawCanvas, 50);
       } else if (tabId === 'allocation') {
         renderAllocUI();
       } else if (tabId === 'comparison') {
+        renderComparison();
         setTimeout(renderComparison, 50);
       }
     }
@@ -2755,7 +2779,10 @@
       if (['scheduling', 'allocation', 'comparison', 'theory'].includes(tabParam)) {
         switchTab(tabParam);
         const simSec = document.getElementById('simulator-section');
-        if (simSec) simSec.scrollIntoView({ behavior: 'auto' });
+        if (simSec) {
+          const topY = simSec.getBoundingClientRect().top + window.scrollY;
+          window.scrollTo({ top: topY, behavior: 'instant' });
+        }
       }
 
       // Listen for window resize to redraw canvas crisp
