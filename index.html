@@ -2740,6 +2740,24 @@
       runDiskSim();
       initAllocationDisk();
 
+      const params = new URLSearchParams(window.location.search);
+      const algoParam = params.get('algo');
+      if (algoParam && ['FCFS', 'SSTF', 'SCAN', 'C-SCAN'].includes(algoParam)) {
+        const sel = document.getElementById('algoSelect');
+        if (sel) { sel.value = algoParam; runDiskSim(); }
+      }
+      const methodParam = params.get('method');
+      if (methodParam && ['contiguous', 'linked', 'indexed'].includes(methodParam)) {
+        const msel = document.getElementById('allocMethodSelect');
+        if (msel) { msel.value = methodParam; changeAllocMethod(methodParam); }
+      }
+      const tabParam = params.get('tab') || window.location.hash.replace('#', '');
+      if (['scheduling', 'allocation', 'comparison', 'theory'].includes(tabParam)) {
+        switchTab(tabParam);
+        const simSec = document.getElementById('simulator-section');
+        if (simSec) simSec.scrollIntoView({ behavior: 'auto' });
+      }
+
       // Listen for window resize to redraw canvas crisp
       window.addEventListener('resize', () => {
         redrawCanvas();
