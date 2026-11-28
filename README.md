@@ -24,7 +24,22 @@
 
 ---
 
-## 🚀 Cara Menjalankan Aplikasi
+## 🔗 Tautan Resmi Proyek
+- **Aplikasi Web Live (HTTPS):** https://so.navia.web.id
+- **Video Demo (YouTube Unlisted):** https://youtu.be/pR2R5b46ugI
+- **Repositori GitHub:** https://github.com/Yogiri-Ai/UAS-Sistem-Operasi
+
+---
+
+## 📖 Cara Penggunaan Simulator
+1. Buka **https://so.navia.web.id** melalui browser desktop maupun smartphone, lalu klik **Buka Simulator DiskLab ↓**.
+2. **Tab Penjadwalan Disk (`💿 Penjadwalan Disk`):** Pilih algoritma (`FCFS`, `SSTF`, `SCAN`, atau `C-SCAN`), atur *Posisi Awal Head*, *Maks Silinder*, *Arah Sapuan*, serta antrian track (atau gunakan tombol preset *Buku Silberschatz* / *Kasus Starvation SSTF*), lalu klik **Hitung** dan tekan **▶ Putar** untuk melihat animasi trajektori head beserta statistik *Total Head Movement* dan *Rata-rata Seek Time*.
+3. **Tab Alokasi Berkas (`📁 Alokasi Berkas`):** Pilih metode (`Contiguous`, `Linked List`, atau `Indexed Allocation`) pada grid 64 blok (`#00–#63`), buat atau hapus berkas, serta gunakan tombol **Kompaksi / Defrag** untuk memadatkan ruang yang terpecah akibat *External Fragmentation*.
+4. **Tab Perbandingan Efisiensi (`📊 Perbandingan Efisiensi`):** Bandingkan total pergerakan head keempat algoritma secara serentak pada grafik batang Chart.js dan tabel risiko *starvation*.
+
+---
+
+## 🚀 Cara Instalasi & Menjalankan Lokal
 1. **Buka Langsung di Browser:**
    - Cukup buka berkas `index.html` dengan Google Chrome atau browser modern lainnya.
 2. **Menjalankan Dev Server Lokal:**
